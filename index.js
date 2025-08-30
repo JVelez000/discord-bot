@@ -1,13 +1,10 @@
 require("dotenv").config();
 const { Client, GatewayIntentBits, Events } = require("discord.js");
 
-const TOKEN = process.env.DISCORD_TOKEN;
-const CLIENT_ID = process.env.CLIENT_ID;
-const GUILD_ID = process.env.GUILD_ID;
-const FAQ_CHANNEL_ID = process.env.FAQ_CHANNEL_ID;
+const { DISCORD_TOKEN, CLIENT_ID, GUILD_ID, FAQ_CHANNEL_ID } = process.env;
 
-if (!TOKEN || !CLIENT_ID || !GUILD_ID || !FAQ_CHANNEL_ID) {
-  console.error("ERROR: faltan variables en .env. Revisa DISCORD_TOKEN, CLIENT_ID, GUILD_ID, FAQ_CHANNEL_ID");
+if (!DISCORD_TOKEN || !CLIENT_ID || !GUILD_ID || !FAQ_CHANNEL_ID) {
+  console.error("Missing environment variables: DISCORD_TOKEN, CLIENT_ID, GUILD_ID, FAQ_CHANNEL_ID");
   process.exit(1);
 }
 
@@ -15,91 +12,98 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
+    GatewayIntentBits.MessageContent
+  ]
 });
 
-const RESPONSES = {
-  register: `📌 **Pasos para registrarte en la página:**\n\n` +
-    `1️⃣ Crear cuenta\n` +
-    `2️⃣ Nombre\n` +
-    `3️⃣ Correo\n` +
-    `4️⃣ Contraseña (mínimo 8 caracteres: mayúscula, minúscula y número)\n` +
-    `5️⃣ Confirmar contraseña\n` +
-    `6️⃣ Recordarme (checkbox)\n` +
-    `7️⃣ ¿Olvidaste tu contraseña? (link para recuperar)\n` +
-    `8️⃣ Registrarme / Continuar con Google (OAuth)\n` +
-    `9️⃣ ¿Ya tienes cuenta? Inicia sesión (link)\n\n` +
-    `**Notas sobre contraseña:** la contraseña debe tener al menos 8 caracteres, incluir mayúscula, minúscula y número. Puedes permitir mostrar/ocultar la contraseña con un icono ojo en el campo.\n`,
+const RESPONSES = Object.freeze({
+  register: "**Pasos para registrarte en la página:**\n" +
+    "1️⃣ Crear cuenta\n" +
+    "2️⃣ Nombre\n" +
+    "3️⃣ Correo electrónico\n" +
+    "4️⃣ Contraseña (mínimo 8 caracteres: mayúscula, minúscula y número)\n" +
+    "5️⃣ Confirmar contraseña\n" +
+    "6️⃣ Recordarme (checkbox)\n" +
+    "7️⃣ ¿Olvidaste tu contraseña? (enlace de recuperación)\n" +
+    "8️⃣ Registrarse / Continuar con Google (OAuth)\n" +
+    "9️⃣ ¿Ya tienes cuenta? Inicia sesión aquí\n\n" +
+    "**Notas sobre la contraseña:** Debe tener al menos 8 caracteres, incluir mayúscula, minúscula y un número. También puedes activar mostrar/ocultar contraseña.",
 
-  dashboard: `📊 **Dashboard**:\nResumen general con métricas principales, accesos rápidos a tareas, calendario y notificaciones. Widgets configurables: actividad reciente, tareas urgentes, próximos eventos.`,
+  dashboard: "**Panel de control:** Vista general con métricas clave, acceso rápido a tareas, calendario y notificaciones. Widgets configurables: actividad reciente, tareas urgentes, próximos eventos.",
 
-  tasks: `📝 **Tareas**:\nLista de tareas con estados (todo, doing, done), prioridad, fecha de entrega. Permite crear, editar, asignar usuario, marcar completada y filtros por etiqueta/fecha.`,
+  tasks: "🗂️ **Tareas:** Tu organizador personal para mantener al día todas tus tareas académicas con un diseño moderno oscuro que no cansa la vista durante largas sesiones de estudio.\n\n" +
+  "✨ ¿Qué puedes hacer?\n\n" +
+  "✏️ Crear, editar y eliminar tareas fácilmente\n" +
+  "⏱️ Timer Pomodoro para estudiar en bloques de 25 o 50 minutos\n" +
+  "🏷️ Organizar por materias (Matemáticas, Física, Química, etc.)\n" +
+  "🚨 Marcar prioridad: Alta (rojo), Media (amarillo), Baja (verde)\n" +
+  "✅ Tachar tareas completadas y ver tu progreso\n" +
+  "📊 Ver estadísticas: cuántas tareas completaste y tu racha de estudio\n" +
+  "🔍 Filtrar por: tareas de hoy, esta semana, pendientes o vencidas\n" +
+  "📱 Funciona perfectamente en celular y computadora",
 
-  calendar: `📅 **Calendario**:\nVisualización por mes/semana/día. Integración de eventos (tarea con fecha, examen, recordatorio). Permite crear eventos, notificaciones y sincronizar con Google Calendar si corresponde.`,
+  calendar: "📆 **Calendario:** Tu calendario personal para no perderte ningún examen, tarea o proyecto con vistas que se adaptan a tu forma de planificar.\n\n" +
+  "✨ ¿Qué puedes hacer?\n\n" +
+  "📅 Ver tu mes completo, semana, día o lista de próximos eventos\n" +
+  "➕ Agregar exámenes, tareas y proyectos con un click\n" +
+  "🎨 Cada materia tiene su color para identificarla rápidamente\n" +
+  "📥 Descargar tu calendario para imprimirlo o agregarlo a Google Calendar\n" +
+  "📂 Subir eventos desde archivos de otros calendarios\n" +
+  "🖨️ Imprimir tu calendario mensual\n" +
+  "⏩ Navegar rápidamente a cualquier mes del año\n" +
+  "🔔 Configurar recordatorios para no olvidar nada",
 
-  notes: `📒 **Notas**:\nNotas personales con título y contenido rich-text (o markdown). Carpetas o tags para organizar. Borrador autosave y búsqueda.`,
+  notes: "📝 **Notas:** Crea notas personales con título y contenido en texto enriquecido/markdown. Organízalas por carpetas o etiquetas. Guarda borradores automáticamente y búscalas fácilmente.",
 
-  forum: `💬 **Foro**:\nEspacio de discusión por temas; posts con respuestas, votos y moderación. Categorías, etiquetas y búsqueda. Notificaciones cuando alguien responde a tu post.`,
+  forum: "💬 **Foro:** Espacio de discusión por temas; publicaciones con respuestas, votos y moderación. Incluye categorías, etiquetas, búsqueda y notificaciones cuando alguien responde.",
 
-  help: `🤖 **Comandos disponibles:**\n\n` +
-    `• \`!register\` → Pasos para registrarte\n` +
-    `• \`!dashboard\` → Info sobre el Dashboard\n` +
-    `• \`!tasks\` → Info sobre Tareas\n` +
-    `• \`!calendar\` → Info sobre el Calendario\n` +
-    `• \`!notes\` → Info sobre Notas\n` +
-    `• \`!forum\` → Info sobre Foro\n` +
-    `• \`!help\` → Lista de comandos disponibles\n`
-};
-
-client.once(Events.ClientReady, (c) => {
-  console.log(`✅ Bot conectado como ${c.user.tag}`);
+  help: "**Comandos disponibles:**\n" +
+    "`!register` → Pasos para registrarse\n" +
+    "`!dashboard` → Información del panel de control\n" +
+    "`!tasks` → Información sobre tareas\n" +
+    "`!calendar` → Información del calendario\n" +
+    "`!notes` → Información sobre notas\n" +
+    "`!forum` → Información del foro\n" +
+    "`!help` → Lista de comandos"
 });
 
-client.on("messageCreate", async (message) => {
-  try {
-    if (message.author.bot) return;
-    if (message.channel.id !== FAQ_CHANNEL_ID) return;
+client.once(Events.ClientReady, c => {
+  console.log(`Bot connected as ${c.user.tag}`);
+});
 
-    const text = message.content.trim();
+client.on("messageCreate", async message => {
+  if (message.author.bot) return;
+  if (message.channel.id !== FAQ_CHANNEL_ID) return;
 
-    if (text === "!register") return message.reply(RESPONSES.register);
-    if (text === "!dashboard") return message.reply(RESPONSES.dashboard);
-    if (text === "!tasks") return message.reply(RESPONSES.tasks);
-    if (text === "!calendar") return message.reply(RESPONSES.calendar);
-    if (text === "!notes") return message.reply(RESPONSES.notes);
-    if (text === "!forum") return message.reply(RESPONSES.forum);
-    if (text === "!help") return message.reply(RESPONSES.help);
-
-  } catch (err) {
-    console.error("Error handling message:", err);
+  const text = message.content.trim().toLowerCase();
+  if (RESPONSES[text.slice(1)]) {
+    try {
+      await message.reply(RESPONSES[text.slice(1)]);
+    } catch (err) {
+      console.error("Error sending reply:", err);
+    }
   }
 });
 
-client.on(Events.InteractionCreate, async (interaction) => {
+client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
-  try {
-    const name = interaction.commandName;
-
-    if (name === "register") return interaction.reply(RESPONSES.register);
-    if (name === "dashboard") return interaction.reply(RESPONSES.dashboard);
-    if (name === "tasks") return interaction.reply(RESPONSES.tasks);
-    if (name === "calendar") return interaction.reply(RESPONSES.calendar);
-    if (name === "notes") return interaction.reply(RESPONSES.notes);
-    if (name === "forum") return interaction.reply(RESPONSES.forum);
-    if (name === "ping") return interaction.reply("🏓 Pong!");
-    if (name === "help") return interaction.reply(RESPONSES.help);
-
-  } catch (err) {
-    console.error("Interaction error:", err);
+  const name = interaction.commandName;
+  if (RESPONSES[name]) {
+    try {
+      await interaction.reply(RESPONSES[name]);
+    } catch (err) {
+      console.error("Error handling interaction:", err);
+    }
+  } else if (name === "ping") {
+    await interaction.reply("Pong!");
   }
 });
 
-process.on("unhandledRejection", (err) => {
+process.on("unhandledRejection", err => {
   console.error("UNHANDLED REJECTION:", err);
 });
 
-client.login(TOKEN).catch((err) => {
-  console.error("Login failed (token inválido?):", err);
+client.login(DISCORD_TOKEN).catch(err => {
+  console.error("Login failed (invalid token?):", err);
   process.exit(1);
 });
