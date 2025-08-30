@@ -53,7 +53,13 @@ const RESPONSES = Object.freeze({
   "⏩ Navegar rápidamente a cualquier mes del año\n" +
   "🔔 Configurar recordatorios para no olvidar nada",
 
-  notes: "📝 **Notas:** Crea notas personales con título y contenido en texto enriquecido/markdown. Organízalas por carpetas o etiquetas. Guarda borradores automáticamente y búscalas fácilmente.",
+  notes: "📝 **Notas:** Tu espacio personal para guardar ideas, resúmenes, apuntes rápidos o cualquier cosa que no quieras olvidar. Con un diseño claro y ordenado para que encontrar tus notas sea tan fácil como escribirlas.\n\n" +
+  "✨ ¿Qué puedes hacer?\n\n" +
+  "📝 Crear, editar y eliminar notas rápidamente\n" +
+  "📌 Fijar notas importantes para que siempre aparezcan al principio\n" +
+  "🔍 Buscar por palabras clave en tus notas en tiempo real\n" +
+  "🗂️ Filtrar por más recientes o por notas fijadas\n" +
+  "📱 Accede desde tu celular o computadora sin perder tus datos",
 
   forum: "💬 **Foro:** Espacio de discusión por temas; publicaciones con respuestas, votos y moderación. Incluye categorías, etiquetas, búsqueda y notificaciones cuando alguien responde.",
 
