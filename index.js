@@ -17,7 +17,7 @@ const client = new Client({
 });
 
 const RESPONSES = Object.freeze({
-  register: "**Pasos para registrarte en la página:**\n" +
+  register: "**Pasos para registrarte en la pagina:**\n" +
     "1️⃣ Crear cuenta\n" +
     "2️⃣ Nombre\n" +
     "3️⃣ Correo electrónico\n" +
