@@ -21,7 +21,7 @@ const client = new Client({
   ],
 });
 
-// Mensajes/respuestas (personaliza el texto si quieres)
+// Mensajes/respuestas
 const RESPONSES = {
   register: `📌 **Pasos para registrarte en la página:**\n\n` +
     `1️⃣ Crear cuenta\n` +
@@ -43,7 +43,16 @@ const RESPONSES = {
 
   notes: `📒 **Notas**:\nNotas personales con título y contenido rich-text (o markdown). Carpetas o tags para organizar. Borrador autosave y búsqueda.`,
 
-  forum: `💬 **Foro**:\nEspacio de discusión por temas; posts con respuestas, votos y moderación. Categorías, etiquetas y búsqueda. Notificaciones cuando alguien responde a tu post.`
+  forum: `💬 **Foro**:\nEspacio de discusión por temas; posts con respuestas, votos y moderación. Categorías, etiquetas y búsqueda. Notificaciones cuando alguien responde a tu post.`,
+
+  help: `🤖 **Comandos disponibles:**\n\n` +
+    `• \`!register\` → Pasos para registrarte\n` +
+    `• \`!dashboard\` → Info sobre el Dashboard\n` +
+    `• \`!tasks\` → Info sobre Tareas\n` +
+    `• \`!calendar\` → Info sobre el Calendario\n` +
+    `• \`!notes\` → Info sobre Notas\n` +
+    `• \`!forum\` → Info sobre Foro\n` +
+    `• \`!help\` → Lista de comandos disponibles\n`
 };
 
 client.once(Events.ClientReady, (c) => {
@@ -54,43 +63,29 @@ client.once(Events.ClientReady, (c) => {
 client.on("messageCreate", async (message) => {
   try {
     if (message.author.bot) return;
-
-    // solo responder en canal FAQ configurado por ID
     if (message.channel.id !== FAQ_CHANNEL_ID) return;
 
     const text = message.content.trim();
 
-    // Comandos exactos
-    if (text === "!register") {
-      return message.reply(RESPONSES.register);
-    }
-    if (text === "!dashboard") {
-      return message.reply(RESPONSES.dashboard);
-    }
-    if (text === "!tasks") {
-      return message.reply(RESPONSES.tasks);
-    }
-    if (text === "!calendar") {
-      return message.reply(RESPONSES.calendar);
-    }
-    if (text === "!notes") {
-      return message.reply(RESPONSES.notes);
-    }
-    if (text === "!forum") {
-      return message.reply(RESPONSES.forum);
-    }
+    if (text === "!register") return message.reply(RESPONSES.register);
+    if (text === "!dashboard") return message.reply(RESPONSES.dashboard);
+    if (text === "!tasks") return message.reply(RESPONSES.tasks);
+    if (text === "!calendar") return message.reply(RESPONSES.calendar);
+    if (text === "!notes") return message.reply(RESPONSES.notes);
+    if (text === "!forum") return message.reply(RESPONSES.forum);
+    if (text === "!help") return message.reply(RESPONSES.help);
+
   } catch (err) {
     console.error("Error handling message:", err);
   }
 });
 
-// Opcional: soportar slash commands si los registras (deployed)
+// Slash commands (opcional)
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
   try {
     const name = interaction.commandName;
 
-    // Responder con los mismos textos (solo si el comando se usó en el guild configurado)
     if (name === "register") return interaction.reply(RESPONSES.register);
     if (name === "dashboard") return interaction.reply(RESPONSES.dashboard);
     if (name === "tasks") return interaction.reply(RESPONSES.tasks);
@@ -98,6 +93,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (name === "notes") return interaction.reply(RESPONSES.notes);
     if (name === "forum") return interaction.reply(RESPONSES.forum);
     if (name === "ping") return interaction.reply("🏓 Pong!");
+    if (name === "help") return interaction.reply(RESPONSES.help);
+
   } catch (err) {
     console.error("Interaction error:", err);
   }
@@ -107,7 +104,6 @@ process.on("unhandledRejection", (err) => {
   console.error("UNHANDLED REJECTION:", err);
 });
 
-// Conectar
 client.login(TOKEN).catch((err) => {
   console.error("Login failed (token inválido?):", err);
   process.exit(1);
