@@ -1,8 +1,6 @@
-// index.js
 require("dotenv").config();
 const { Client, GatewayIntentBits, Events } = require("discord.js");
 
-// Leer variables de entorno
 const TOKEN = process.env.DISCORD_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const GUILD_ID = process.env.GUILD_ID;
@@ -21,7 +19,6 @@ const client = new Client({
   ],
 });
 
-// Mensajes/respuestas
 const RESPONSES = {
   register: `📌 **Pasos para registrarte en la página:**\n\n` +
     `1️⃣ Crear cuenta\n` +
@@ -59,7 +56,6 @@ client.once(Events.ClientReady, (c) => {
   console.log(`✅ Bot conectado como ${c.user.tag}`);
 });
 
-// Handler para comandos tipo "!" en canal FAQ
 client.on("messageCreate", async (message) => {
   try {
     if (message.author.bot) return;
@@ -80,7 +76,6 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-// Slash commands (opcional)
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
   try {
